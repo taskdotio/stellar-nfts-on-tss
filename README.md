@@ -1,1 +1,1 @@
-# stellar-nfts-on-tss
+# Stellar NFTs on TSS
