@@ -14,4 +14,13 @@ The txFunction manageNFT.js has been created to allow for the manged trade to be
 
 `quantity` is the number of NFT's that wish to be purchased.
 
-The first segment of the txFunction will verify if there is an existing order that exists for the NFT code that has been passed to the txFunction. 
+The first segment of the txFunction will verify if there is an existing order that exists for the NFT code that has been passed to the txFunction. If an order does not exist than the txFunction will throw a message and cease operation, stating that "Nothing exists for the requested NFT". If there exists an order that matches the proposed price passed to the txFunction, then the txFunction will set a flag continuing the trade of the NFT.
+
+A major part of the NFT-Management-txFunction is the ability to pay royalties to different parties based on a percentage. These royalties are written into the issuing account as a data key, it is important that the royalties are inputted into the manage data operation in a particular format. `royalty_{$amount}%` is the format of the key of the manage data operation, where $amount is the percentage amount of price that is to be paid to a particular Stellar account.
+
+
+## Limitations of the txFunction
+
+Currently the txFunction requires that the NFT trade is made using a native selling asset. This could be easily changed in the future to enable the use of other assets being traded. However, for ease of filling orders and trading NFTs utilising native assets was the easiest and most efficient way. 
+
+
