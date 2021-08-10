@@ -18,6 +18,8 @@ The first segment of the txFunction will verify if there is an existing order th
 
 A major part of the NFT-Management-txFunction is the ability to pay royalties to different parties based on a percentage. These royalties are written into the issuing account as a data key, it is important that the royalties are inputted into the manage data operation in a particular format. `royalty_{$amount}%` is the format of the key of the manage data operation, where $amount is the percentage amount of price that is to be paid to a particular Stellar account.
 
+The way in which the txFunction will process these royalties is by adding a payment operation from the source account to the accounts listed in the data of the issuing account. This allows for the creator of the NFT to determine what sort of payments they wanted to establish and will allow for royalties to be paid or not be paid if there is nothing there. 
+
 
 ## Limitations of the txFunction
 
