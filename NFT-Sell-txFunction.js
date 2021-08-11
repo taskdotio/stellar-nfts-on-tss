@@ -2,6 +2,8 @@ module.exports = (body) => {
   const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = StellarSdk //add server?? would need StellarSDK
   const { walletAddr, nftCode, nftIssuer, price, quantity } = body
 
+  // Hash as of 11 of August 7:22pm AEST
+
   // Set up the selling asset as well as the buying asset
   sellingAsset = new Asset(nftCode, nftIssuer);
   buyingAsset = Asset.Native();
@@ -24,7 +26,7 @@ module.exports = (body) => {
   
   .then((account) => {
 
-    var transaction = new TransactionBuilder(
+    new TransactionBuilder(
       new Account(account.id, account.sequence), 
       { 
         fee: BASE_FEE, 
@@ -33,32 +35,28 @@ module.exports = (body) => {
     )
    
     // Authorise the account to have full authority with the asset
-    transaction.addOperation(Operation.setTrustlineFlags({
+    .addOperation(Operation.setTrustLineFlags({
       trustor: walletAddr,
       asset: sellingAsset,
-      flags: {
-        authorized: true
-      }
-    }));
+      flags: {authorized:true}
+    }))
 
     // Add the selling operations of the transaction
-    transaction.addOperation(Operation.manageSellOffer({
-            selling: sellingAsset,
-            buying: buyingAsset,
-            buyAmount: quantity,
-            price: price
-          }));
-
-    // Remove the authorisation and allowing the account to only maintain liabilites. ]
-    transaction.addOperation(Operation.setTrustlineFlags({
-      trustor: walletAddr,
-      asset: sellingAsset,
-      flags: {
-        authorized: false,
-        authorizedToMaintainLiabilities: true
-      }
-    }
-    ))
+    .addOperation(Operation.manageSellOffer({
+        selling: sellingAsset,
+        buying: buyingAsset,
+        amount: quantity,
+        price: price,
+        offerId: "0"
+      }))
+    
+    // Remove full authority and only authorise to maintain liabilities
+    .addOperation(Operation.setTrustLineFlags({
+        trustor: walletAddr,
+        asset: sellingAsset,
+        flags: {authorized: false,
+                authorizedToMaintainLiabilities: true}
+      }))
     .setTimeout(0)
     .build()
     .toXDR()
