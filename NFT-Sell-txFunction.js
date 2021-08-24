@@ -1,12 +1,17 @@
 module.exports = (body) => {
-  const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = StellarSdk //add server?? would need StellarSDK
+  const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk")
+  const fetch = require("node-fetch")
   const { walletAddr, nftCode, nftIssuer, price, quantity } = body
 
   // Hash as of 11 of August 7:22pm AEST
+  // Signer: GCKDDO76XQXCMBC7AGH5DLLB2UCYHMHPQD4YPHGHGYQBL72OUIOMHMWU
 
   // Set up the selling asset as well as the buying asset
-  sellingAsset = new Asset(nftCode, nftIssuer);
-  buyingAsset = Asset.Native();
+  var sellingAsset = new Asset(nftCode, nftIssuer);
+  var buyingAsset = Asset.native();
+
+  price = parseFloat(price).toFixed(7);
+  quantity = parseFloat(quantity).toFixed(7);
 
   // Checking the interger value of the quantity
   var remainder = quantity % 1
