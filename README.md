@@ -17,6 +17,8 @@ This is the typical process you’ll go through to create a new NFT:
 	3. Add the signer turrets
 	4. Lock account 
 
+# Breakdown of the Stellar NFT
+
 ## Asset name conventions
 Assets are named NFT and the issuer account is the unique identifier that is associated with the account.  This allows wallets to display NFTs in separate areas to the fungible assets.
 
