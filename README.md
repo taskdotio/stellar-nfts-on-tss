@@ -1,4 +1,3 @@
-# Overview
 NFTs are currently difficult to buy, sell and hold on the Stellar network. This new standard for NFTs allows for them to be managed using [Stellar’s Turing Signing Servers](https://tss.stellar.org) to facilitate the buying and selling of NFTs along with adding features. 
 
 Use these standards to create the NFTs and manage then in compatible Stellar wallets.
@@ -19,15 +18,15 @@ This is the typical process you’ll go through to create a new NFT:
 
 # Breakdown of the Stellar NFT
 
-## Asset name conventions
+### Asset name conventions
 Assets are named NFT and the issuer account is the unique identifier that is associated with the account.  This allows wallets to display NFTs in separate areas to the fungible assets.
 
-## Defining supply
+### Defining supply
 It is necessary to define the number of NFTs that are to be created at the start of the creation of the NFT. Normally this will be 1 for a single NFT, or some other integer if you are issuing more than one.
 
 Once you complete creation of your NFT you’ll lock the account, so make sure the supply is defined.
 
-## Asset TOML file
+### Asset TOML file
 Example of a Asset TOML file for an NFT - this is the traditional TOML file required to [document a Stellar asset](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md):
 
 ```
@@ -42,7 +41,7 @@ desc="Supporting description of the NFT"
 image="https://ipfs.io/ipfs/QmRwPzCAjYRPPePykh4umGcrdRCeNuupAjqsN8NHNi2fXm"
 ```
 
-## NFT TOML file
+### NFT TOML file
 This is uploaded to IPFS, the resulting CID is stored in the asset Managed Data. Example of a NFT TOML file for an NFT:
 
 ```
@@ -67,13 +66,13 @@ This is uploaded to IPFS, the resulting CID is stored in the asset Managed Data.
 }
 ```
 
-### Notes on the NFT TOML file
+#### Notes on the NFT TOML file
 * Domain field = initial marketplace owner of the NFT  (initial beneficiary)
 * Author (optional) = profile of user who created the data
 * Publisher (optional) = profile of user who created the NFT
 * Attributes (optional) = key pair data additions to be stored with the NFT
 
-## Managing royalties
+### Managing royalties
 Royalty payments are to be entered as a manage data entry for the issuing account. However, there are two entries that are not for royalties. They are as follows:
 
 * ipfshash” = “<the CID linking to the NFT toml file we defined>” to the issuer account
@@ -92,7 +91,7 @@ The following is an example of how these royalties can be laid out:
 5. royalty_task_xxx%_initial : wallet_address
 6. royalty_task_xxx%_ongoing : wallet_address
 
-## Adding Turret servers as signers
+### Adding Turret servers as signers
 The turrets that hold the txFunctions that manage the buying and selling of the NFTs need to have signing rights on the account to enable the trustlines of the asset being traded. To do so there is a list of public keys that need to be added to the issuing account as a signer.
 
 The following public keys are to manage selling NFTs
@@ -100,7 +99,7 @@ The following public keys are to manage selling NFTs
 The following public keys are to manage buying NFTs
 **INSERT PUBLIC KEYS HERE**
 
-## Locking account
+### Locking account
 Once all of the above details have been completed for the issuing account the original signing key is to be removed from the account. This then forces all transactions to be facilitated through the use of the txFunctions and the royalties that are implemented in the issuing account will be paid.
 
 # Managing NFT assets
@@ -114,10 +113,10 @@ var price = 10.00;
 var quantity = 1;
 ```
 
-## Using txFunction (API calls)
+### Using txFunction (API calls)
 The txFunctions operate through API calls and responses, there is a list of the URLs at which the txFunctions are located that the wallet can make the buy and sell calls to. To do so a POST request is made with an aut
 
-## Authorisation Tokens
+### Authorisation Tokens
 The post requests require that an authorisation token is used, this is a bearer token and can be made using the following runkit example. This token is per turret and can be set up to satisfy both the buy and sell function. It uses a claimable balance which the turret will keep track  on and claim once enough requests have been made for the functions that have been assigned to the turret. 
 
 * Authorisation Token link: https://runkit.com/mootz12/60d1f69582e0580013bb591e
