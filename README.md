@@ -1,7 +1,5 @@
 NFTs are currently difficult to buy, sell and hold on the Stellar network. This new standard for NFTs allows for them to be managed using [Stellar’s Turing Signing Servers](https://tss.stellar.org) to facilitate the buying and selling of NFTs along with adding features. 
 
-Use these standards to create the NFTs and manage then in compatible Stellar wallets.
-
 # Create NFT process
 This is the typical process you’ll go through to create a new NFT:
 1. Gather NFT data such as name, image etc
