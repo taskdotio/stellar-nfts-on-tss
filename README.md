@@ -93,8 +93,11 @@ The following is an example of how these royalties can be laid out:
 The turrets that hold the txFunctions that manage the buying and selling of the NFTs need to have signing rights on the account to enable the trustlines of the asset being traded. To do so there is a list of public keys that need to be added to the issuing account as a signer.
 
 The following public keys are to manage selling NFTs
+	
 **INSERT PUBLIC KEYS HERE**
+	
 The following public keys are to manage buying NFTs
+	
 **INSERT PUBLIC KEYS HERE**
 
 ### Locking account
