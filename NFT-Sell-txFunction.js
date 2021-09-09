@@ -1,6 +1,6 @@
 module.exports = (body) => {
-  const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk")
-  const fetch = require("node-fetch")
+  const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk");
+  const fetch = require("node-fetch");
   const { walletAddr, nftCode, nftIssuer, price, quantity } = body
 
   // Hash as of 11 of August 7:22pm AEST
