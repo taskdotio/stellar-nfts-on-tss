@@ -78,16 +78,18 @@ Royalty payments are to be entered as a manage data entry for the issuing accoun
 
 After these two entries are added the royalties for the remaining parties that are involved with the NFT.  The following layout is how to add the royalties as a manage data keypair:
 
-royalty_role_link_xxx%_initial_ongoing : wallet_address
+royalty_role_link_xxx_initial_ongoing : wallet_address
+
+Where xxx is the percentage of the sale price of the NFT that the organisation is taking. It is a number with out the percentage symbol.
 
 The following is an example of how these royalties can be laid out:
 
-1. royalty_author_xxx%_initial  :  wallet_address
-2. royalty_author_xxx%_ongoing  :  wallet_addreess
-3. royalty_publisher_xxx%_initial : wallet_address
-4. royalty_publisher_xxx%_ongoing  : wallet_address
-5. royalty_task_xxx%_initial : wallet_address
-6. royalty_task_xxx%_ongoing : wallet_address
+1. royalty_author_xxx_initial  :  wallet_address
+2. royalty_author_xxx_ongoing  :  wallet_addreess
+3. royalty_publisher_xxx_initial : wallet_address
+4. royalty_publisher_xxx_ongoing  : wallet_address
+5. royalty_task_xxx_initial : wallet_address
+6. royalty_task_xxx_ongoing : wallet_address
 
 ### Adding Turret servers as signers
 The turrets that hold the txFunctions that manage the buying and selling of the NFTs need to have signing rights on the account to enable the trustlines of the asset being traded. To do so there is a list of public keys that need to be added to the issuing account as a signer.
