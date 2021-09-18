@@ -53,8 +53,6 @@ This is uploaded to IPFS, the resulting CID is stored in the asset Managed Data.
    "supply":5,
    "conditions":"Optional conditions depending on royalty policy defined in the txFunctions",
    "domain":"task.io/actasia",
-   "author":"task.io/vetzhao",
-   "publisher":"task.io/tonystark",
    "attributes" : 
   {  
         "Number of organizers 组织者人数" : "5",
@@ -65,10 +63,7 @@ This is uploaded to IPFS, the resulting CID is stored in the asset Managed Data.
 ```
 
 #### Notes on the NFT TOML file
-* Domain field = initial marketplace owner of the NFT  (initial beneficiary)
-* Author (optional) = profile of user who created the data
-* Publisher (optional) = profile of user who created the NFT
-* Attributes (optional) = key pair data additions to be stored with the NFT
+* Domain field = creator profile of the NFT
 
 ### Managing royalties
 Royalty payments are to be entered as a manage data entry for the issuing account. However, there are two entries that are not for royalties. They are as follows:
@@ -84,12 +79,8 @@ Where xxx is the percentage of the sale price of the NFT that the organisation i
 
 The following is an example of how these royalties can be laid out:
 
-1. royalty_author_xxx_initial  :  wallet_address
-2. royalty_author_xxx_ongoing  :  wallet_addreess
-3. royalty_publisher_xxx_initial : wallet_address
-4. royalty_publisher_xxx_ongoing  : wallet_address
-5. royalty_task_xxx_initial : wallet_address
-6. royalty_task_xxx_ongoing : wallet_address
+1. royalty_campaign_xxx_initial  :  wallet_address
+2. royalty_campaign_xxx_ongoing  :  wallet_addreess
 
 ### Adding Turret servers as signers
 The turrets that hold the txFunctions that manage the buying and selling of the NFTs need to have signing rights on the account to enable the trustlines of the asset being traded. To do so there is a list of public keys that need to be added to the issuing account as a signer.
