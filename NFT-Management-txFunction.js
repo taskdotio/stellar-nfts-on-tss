@@ -8,8 +8,8 @@ modules.exports = async (body) => {
 async function processNFT(body) {
   const { walletAddr, nftCode, nftIssuer, price, quantity } = body
   
-  console.log("here");
-  // Checking the interger value of the quantity
+  
+  // Error checking input variables
   var remainder = quantity % 1
   if (remainder !== 0 ) {
       throw {message: 'Amount must be an integer value i.e. 1 or 3 etc.'};
@@ -17,15 +17,15 @@ async function processNFT(body) {
       throw {message: 'Please enter a number that is greater than one'};
   }
   
-  console.log(1);
+
   await orderbookCheck();  
-  console.log(2);
   let royalties = await createRoyalties();
-  console.log(3)
   return buildTransaction(royalties); 
 
 }
-
+// The aim of this function is to run through the stellar order book and determine if there are any 
+// existing sell orders on the network. If there is then the function will continue, otherwise it should
+// stop all together. 
 async function orderbookCheck() {
   // Order book check to determine if an asset is available on the exchange
   let server = new Server("https://horizon-testnet.stellar.org");
@@ -48,7 +48,9 @@ async function orderbookCheck() {
   }
 }
 
-// Returns an array of operations to be added to the final transaction
+// Probes the issuer account's data and processes the data that is stored and creates an array of 
+// royalty payments that are to be added to the final transaction. The data will follow the outline
+// of the github readme
 function createRoyalties() {
   info = fetch(`https://horizon-testnet.stellar.org/accounts/${nftIssuer}`)
   const response = info.json();
@@ -95,6 +97,8 @@ function createRoyalties() {
   return royaltyPayments;
 }
   
+// This function will pull the royalties into it and add it to the main transaction. The main transaction
+// is to create a buy for the listed price that has been passed through to the contract.
 async function buildTransaction(royaltyPayments) {
   // Build the transaction of the NFT with the royalties added if applicable
   return await fetch(`https://horizon-testnet.stellar.org/accounts/${walletAddr}`)
@@ -124,7 +128,7 @@ async function buildTransaction(royaltyPayments) {
               flags: {
               authorized: true
               }
-              }))
+      }))
 
       // Add the selling operations of the transaction
       transaction.addOperation(Operation.manageBuyOffer({
@@ -133,7 +137,7 @@ async function buildTransaction(royaltyPayments) {
               buyAmount: quantity,
               price: price,
               offerId: 0
-              }))
+      }))
 
       // Removing full authorisation and adding only authorisation to maintain liabilities.
       transaction.addOperation(Operation.setTrustLineFlags({
@@ -143,7 +147,7 @@ async function buildTransaction(royaltyPayments) {
               authorized: false,
               authorizedToMaintainLiabilities: true
               }
-              }));
+      }));
 
       // Add the royalty payments to the transaction
       for (i = 0; i < royaltyPayments.length; i++) {

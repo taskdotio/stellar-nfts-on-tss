@@ -1,10 +1,11 @@
-module.exports = (body) => {
-  const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk");
-  const fetch = require("node-fetch");
-  const { walletAddr, nftCode, nftIssuer, price, quantity } = body
+const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk");
+const fetch = require("node-fetch");
 
-  // Hash as of 11 of August 7:22pm AEST
-  // Signer: GCKDDO76XQXCMBC7AGH5DLLB2UCYHMHPQD4YPHGHGYQBL72OUIOMHMWU
+// Hash as of 11 of August 7:22pm AEST
+// Signer: GCKDDO76XQXCMBC7AGH5DLLB2UCYHMHPQD4YPHGHGYQBL72OUIOMHMWU
+
+module.exports = async (body) => {
+  const { walletAddr, nftCode, nftIssuer, price, quantity } = body
 
   // Set up the selling asset as well as the buying asset
   var sellingAsset = new Asset(nftCode, nftIssuer);
@@ -15,6 +16,7 @@ module.exports = (body) => {
 
   // Checking the interger value of the quantity
   var remainder = quantity % 1
+  
   if (remainder !== 0 ) {
     throw {message: 'Amount must be an integer value i.e. 1 or 3 etc.'};
   } else if (quantity < 1) {
@@ -29,8 +31,7 @@ module.exports = (body) => {
     throw res
   })
   
-  .then((account) => {
-
+  .then((account) =>
     new TransactionBuilder(
       new Account(account.id, account.sequence), 
       { 
@@ -53,18 +54,19 @@ module.exports = (body) => {
         amount: quantity,
         price: price,
         offerId: "0"
-      }))
+    }))
     
     // Remove full authority and only authorise to maintain liabilities
     .addOperation(Operation.setTrustLineFlags({
         trustor: walletAddr,
         asset: sellingAsset,
-        flags: {authorized: false,
-                authorizedToMaintainLiabilities: true}
-      }))
+        flags: {
+          authorized: false,
+          authorizedToMaintainLiabilities: true
+        }
+    }))
     .setTimeout(0)
     .build()
     .toXDR()
-  } 
   )
 }
