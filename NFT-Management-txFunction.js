@@ -1,14 +1,15 @@
 const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account, Server } = require ('stellar-sdk') //add server?? would need StellarSDK
 const fetch = require('node-fetch')
-const { walletAddr, nftCode, nftIssuer, price, quantity } = body
- 
-processNFT();
 
+modules.exports = async (body) => {
+ return processNFT(body)
+}
 
-//The main calling function that will call the other functions and eventuate into the final xdr
-async function processNFT() {
-
-  // Some error checking occurs here for the inputs
+async function processNFT(body) {
+  const { walletAddr, nftCode, nftIssuer, price, quantity } = body
+  
+  
+  // Error checking input variables
   var remainder = quantity % 1
   if (remainder !== 0 ) {
       throw {message: 'Amount must be an integer value i.e. 1 or 3 etc.'};
@@ -18,9 +19,7 @@ async function processNFT() {
   
 
   await orderbookCheck();  
-
-  let royalties = createRoyalties();
- 
+  let royalties = await createRoyalties();
   return buildTransaction(royalties); 
 
 }
