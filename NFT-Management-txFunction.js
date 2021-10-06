@@ -1,10 +1,13 @@
 const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account, Server } = require ('stellar-sdk') //add server?? would need StellarSDK
 const fetch = require('node-fetch')
-const { walletAddr, nftCode, nftIssuer, price, quantity } = body
- 
-processNFT();
 
-async function processNFT() {
+modules.exports = async (body) => {
+ return processNFT(body)
+}
+
+async function processNFT(body) {
+  const { walletAddr, nftCode, nftIssuer, price, quantity } = body
+  
   console.log("here");
   // Checking the interger value of the quantity
   var remainder = quantity % 1
@@ -17,7 +20,7 @@ async function processNFT() {
   console.log(1);
   await orderbookCheck();  
   console.log(2);
-  //let royalties = await createRoyalties();
+  let royalties = await createRoyalties();
   console.log(3)
   return buildTransaction(royalties); 
 
