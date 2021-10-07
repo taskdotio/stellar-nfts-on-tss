@@ -1,5 +1,12 @@
+// This txFunction manages the buying of NFTs by:
+// - Check that a sell order exists in the order book
+// - Checks the NFT issuer for royalty payments
+// - We create an array of the royalty payment operations
+// Finally we build a buy order transaction that manages the royalty payments
+
 const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account, Server } = require ('stellar-sdk') //add server?? would need StellarSDK
 const fetch = require('node-fetch')
+// Adf the turret vars
 
 modules.exports = async (body) => {
  return processNFT(body)
@@ -9,7 +16,7 @@ async function processNFT(body) {
   const { walletAddr, nftCode, nftIssuer, price, quantity } = body
   
   
-  // Error checking input variables
+  // Check we are dealing with an integer to maintain non fungibility
   var remainder = quantity % 1
   if (remainder !== 0 ) {
       throw {message: 'Amount must be an integer value i.e. 1 or 3 etc.'};
@@ -21,11 +28,10 @@ async function processNFT(body) {
   await orderbookCheck();  
   let royalties = await createRoyalties();
   return buildTransaction(royalties); 
-
 }
-// The aim of this function is to run through the stellar order book and determine if there are any 
-// existing sell orders on the network. If there is then the function will continue, otherwise it should
-// stop all together. 
+
+// Run through the stellar order book and determine if there are any existing sell orders on the network.
+// If there is then the function will continue, otherwise it should stop all together. 
 async function orderbookCheck() {
   // Order book check to determine if an asset is available on the exchange
   let server = new Server("https://horizon-testnet.stellar.org");
@@ -48,11 +54,10 @@ async function orderbookCheck() {
   }
 }
 
-// Probes the issuer account's data and processes the data that is stored and creates an array of 
-// royalty payments that are to be added to the final transaction. The data will follow the outline
-// of the github readme
+// Probes the issuer account's data and processes the royalty data that is stored and creates an array of 
+// royalty payments that are to be added to the final transaction. 
 function createRoyalties() {
-  info = fetch(`https://horizon-testnet.stellar.org/accounts/${nftIssuer}`)
+  info = fetch(`https://horizon-testnet.stellar.org/accounts/${nftIssuer}`) // update hardcode
   const response = info.json();
   var data = response.data;
   
@@ -101,7 +106,7 @@ function createRoyalties() {
 // is to create a buy for the listed price that has been passed through to the contract.
 async function buildTransaction(royaltyPayments) {
   // Build the transaction of the NFT with the royalties added if applicable
-  return await fetch(`https://horizon-testnet.stellar.org/accounts/${walletAddr}`)
+  return await fetch(`https://horizon-testnet.stellar.org/accounts/${walletAddr}`) // update hardcode
   .then((res) => {
       if (res.ok)
           return res.json()
@@ -118,9 +123,6 @@ async function buildTransaction(royaltyPayments) {
               }
       )
 
-      // Only adds the payments of the royalties based on the payment information stored in
-      // the issuing account and only if there are bids that satisfy the purchasing price.
-
       // Set the trustline flags to allow full authority
       transaction.addOperation(Operation.setTrustLineFlags({
               trustor: walletAddr,
@@ -130,7 +132,7 @@ async function buildTransaction(royaltyPayments) {
               }
       }))
 
-      // Add the selling operations of the transaction
+      // Add the buying operations of the transaction
       transaction.addOperation(Operation.manageBuyOffer({
               selling: sellingAsset,
               buying: buyingAsset,
