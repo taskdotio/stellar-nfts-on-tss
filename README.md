@@ -73,9 +73,10 @@ Royalty payments are to be entered as a manage data entry for the issuing accoun
 
 After these two entries are added the royalties for the remaining parties that are involved with the NFT.  The following layout is how to add the royalties as a manage data keypair:
 
-royalty_role_link_xxx_initial_ongoing : wallet_address
+royalty_role-link_xxx_initial_ongoing : wallet_address
 
-Where xxx is the percentage of the sale price of the NFT that the organisation is taking. It is a number with out the percentage symbol.
+- xxx is the percentage of the sale price of the NFT that the organisation is taking. It is a number with out the percentage symbol
+- "role-link" is the royalty association (i.e. how the account is related to this payment)
 
 The following is an example of how these royalties can be laid out:
 
@@ -97,7 +98,7 @@ The following public keys are to manage buying NFTs
 Once all of the above details have been completed for the issuing account the original signing key is to be removed from the account. This then forces all transactions to be facilitated through the use of the txFunctions and the royalties that are implemented in the issuing account will be paid.
 
 # Managing NFT assets
-NFTs created using this method will be managed through two functions that run on the Stellar Turret Signing Server. The two functions are BuyNFT and SellNFT.  These functions take in the same values which are listed below.
+NFTs created using this method will be managed through two functions that run on the Stellar Turret Signing Server. The two functions are NFT-Buy-txFunction and NFT-Sell-txFunction.  These functions take in the same values which are listed below.
 
 ```
 Var walletAddr = "GBPDHJ6MJFCBFHABJAL75SUH627MDC4MKYY5IQJGUIWRD6YI74CYWGBW"; 
