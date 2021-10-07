@@ -1,8 +1,9 @@
+// This txFunction creates a sell order for an NFT asset. Uses walletAddr, nftCode, nftIssuer, price, quantity
+// input variables - and checks for integers to protect nonfungibility.
+
 const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk");
 const fetch = require("node-fetch");
-
-// Hash as of 11 of August 7:22pm AEST
-// Signer: GCKDDO76XQXCMBC7AGH5DLLB2UCYHMHPQD4YPHGHGYQBL72OUIOMHMWU
+// to do const server = new Server(HORIZON_URL);
 
 module.exports = async (body) => {
   const { walletAddr, nftCode, nftIssuer, price, quantity } = body
@@ -14,7 +15,7 @@ module.exports = async (body) => {
   price = parseFloat(price).toFixed(7);
   quantity = parseFloat(quantity).toFixed(7);
 
-  // Checking the interger value of the quantity
+  // Make sure we are using integer sale value to protect nonfungible integrity
   var remainder = quantity % 1
   
   if (remainder !== 0 ) {
@@ -23,8 +24,8 @@ module.exports = async (body) => {
     throw {message: 'Please enter a number that is greater than one'};
   }
   
-  // Build the transaction of the NFT with the royalties added if applicable
-  return fetch(`https://horizon-testnet.stellar.org/accounts/${walletAddr}`)
+  // Build the transaction of the NFT
+  return fetch(`https://horizon-testnet.stellar.org/accounts/${walletAddr}`) // update
   .then((res) => {
     if (res.ok)
       return res.json()
@@ -36,7 +37,7 @@ module.exports = async (body) => {
       new Account(account.id, account.sequence), 
       { 
         fee: BASE_FEE, 
-        networkPassphrase: Networks.TESTNET,
+        networkPassphrase: Networks.TESTNET, // update
       }
     )
    
