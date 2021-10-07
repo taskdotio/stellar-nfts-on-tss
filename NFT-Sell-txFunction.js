@@ -3,7 +3,6 @@
 
 const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk");
 const fetch = require("node-fetch");
-// to do const server = new Server(HORIZON_URL);
 
 module.exports = async (body) => {
   const { walletAddr, nftCode, nftIssuer, price, quantity } = body
@@ -11,6 +10,9 @@ module.exports = async (body) => {
   // Set up the selling asset as well as the buying asset
   var sellingAsset = new Asset(nftCode, nftIssuer);
   var buyingAsset = Asset.native();
+
+  // Variable Horizon URL
+  var sellingURL = HORIZON_URL + "/accounts/" + walletAddr;
 
   price = parseFloat(price).toFixed(7);
   quantity = parseFloat(quantity).toFixed(7);
@@ -25,7 +27,7 @@ module.exports = async (body) => {
   }
   
   // Build the transaction of the NFT
-  return fetch(`https://horizon-testnet.stellar.org/accounts/${walletAddr}`) // update
+  return fetch(sellingURL)
   .then((res) => {
     if (res.ok)
       return res.json()
@@ -37,7 +39,7 @@ module.exports = async (body) => {
       new Account(account.id, account.sequence), 
       { 
         fee: BASE_FEE, 
-        networkPassphrase: Networks.TESTNET, // update
+        networkPassphrase: Networks[STELLAR_NETWORK],
       }
     )
    

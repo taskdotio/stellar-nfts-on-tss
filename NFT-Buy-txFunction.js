@@ -34,7 +34,7 @@ async function processNFT(body) {
 // If there is then the function will continue, otherwise it should stop all together. 
 async function orderbookCheck() {
   // Order book check to determine if an asset is available on the exchange
-  let server = new Server("https://horizon-testnet.stellar.org");
+  let server = new Server(HORIZON_URL);
   // Sets the buying asset as an 
 
   orderbook = await server.orderbook(sellingAsset, buyingAsset).call();
@@ -57,7 +57,8 @@ async function orderbookCheck() {
 // Probes the issuer account's data and processes the royalty data that is stored and creates an array of 
 // royalty payments that are to be added to the final transaction. 
 function createRoyalties() {
-  info = fetch(`https://horizon-testnet.stellar.org/accounts/${nftIssuer}`) // update hardcode
+  var issuerURL = HORIZON_URL + "/accounts/" + nftIssuer;
+  info = fetch(issuerURL)
   const response = info.json();
   var data = response.data;
   
@@ -105,8 +106,10 @@ function createRoyalties() {
 // This function will pull the royalties into it and add it to the main transaction. The main transaction
 // is to create a buy for the listed price that has been passed through to the contract.
 async function buildTransaction(royaltyPayments) {
+
+    var accountURL = HORIZON_URL + "/accounts/" + walletAddr
   // Build the transaction of the NFT with the royalties added if applicable
-  return await fetch(`https://horizon-testnet.stellar.org/accounts/${walletAddr}`) // update hardcode
+  return await fetch(accountURL) 
   .then((res) => {
       if (res.ok)
           return res.json()
@@ -119,7 +122,7 @@ async function buildTransaction(royaltyPayments) {
           new Account(account.id, account.sequence), 
               { 
                   fee: BASE_FEE, 
-                  networkPassphrase: Networks.TESTNET,
+                  networkPassphrase: Networks[STELLAR_NETWORK],
               }
       )
 
