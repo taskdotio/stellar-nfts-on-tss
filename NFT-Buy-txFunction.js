@@ -174,16 +174,13 @@ async function buildTransaction(walletAddr, nftIssuer, price, quantity, royaltyP
       while (i !== royaltyPayments.length) {
           
         var op = royaltyPayments[i];
-        
         transaction.addOperation(op);
-        
         i++
       }
       
       
       transaction.setTimeout(0)
-      
-      transaction.build()
+      return transaction.build()
       .toXDR()
       
   }
