@@ -14,8 +14,8 @@ module.exports = async (body) => {
   // Variable Horizon URL
   var sellingURL = HORIZON_URL + "/accounts/" + walletAddr;
 
-  price = parseFloat(price).toFixed(7);
-  quantity = parseFloat(quantity).toFixed(7);
+  newPrice = parseFloat(price).toFixed(7);
+  newQuantity = parseFloat(quantity).toFixed(0);
 
   // Make sure we are using integer sale value to protect nonfungible integrity
   var remainder = quantity % 1
@@ -25,7 +25,7 @@ module.exports = async (body) => {
   } else if (quantity < 1) {
     throw {message: 'Please enter a number that is greater than one'};
   }
-  
+    
   // Build the transaction of the NFT
   return fetch(sellingURL)
   .then((res) => {
@@ -47,26 +47,31 @@ module.exports = async (body) => {
     .addOperation(Operation.setTrustLineFlags({
       trustor: walletAddr,
       asset: sellingAsset,
-      flags: {authorized:true}
+      flags: {
+        authorized:true,
+        authorizedToMaintainLiabilities: false
+      },
+      source: nftIssuer
     }))
 
     // Add the selling operations of the transaction
     .addOperation(Operation.manageSellOffer({
-        selling: sellingAsset,
-        buying: buyingAsset,
-        amount: quantity,
-        price: price,
-        offerId: "0"
+      selling: sellingAsset,
+      buying: buyingAsset,
+      amount: newQuantity,
+      price: newPrice,
+      offerId: "0"
     }))
     
     // Remove full authority and only authorise to maintain liabilities
     .addOperation(Operation.setTrustLineFlags({
-        trustor: walletAddr,
-        asset: sellingAsset,
-        flags: {
-          authorized: false,
-          authorizedToMaintainLiabilities: true
-        }
+      trustor: walletAddr,
+      asset: sellingAsset,
+      flags: {
+        authorized: false,
+        authorizedToMaintainLiabilities: true
+      },
+      source: nftIssuer
     }))
     .setTimeout(0)
     .build()
