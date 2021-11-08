@@ -39,22 +39,22 @@ async function orderbookCheck(sellingAsset, buyingAsset, price) {
   let server = new Server(HORIZON_URL);
   // Sets the buying asset as an 
 
-  orderbook = await server.orderbook(sellingAsset, buyingAsset).call();
-  var bids = orderbook.bids;
-
-  if (bids[0] == '' || bids[0] === "undefined") {
-  throw {message: "Nothing exists for the requested NFT"};
-  } else {
-      for (bid in bids) {
-          var bidPrice = bids[bid].price_r.d.toString();
-
-          // Check to see if the price and amount are a direct match
-          if (bidPrice == price) {
-              break;
-          }
-      }
-  }
+    orderbook = await server.orderbook(sellingAsset, buyingAsset).call();
+    var bids = orderbook.bids;
+    if (typeof(bids[0]) === "undefined") {
+        throw {message: "Nothing exists for the requested NFT"};
+    } else {
+        for (bid in bids) {
+            var bidPrice = bids[bid].price.toString();
+            
+            // Check to see if the price and amount are a direct match
+            if (bidPrice == price) {
+                break;
+            }
+        }
+    }
 }
+
 
 // Probes the issuer account's data and processes the royalty data that is stored and creates an array of 
 // royalty payments that are to be added to the final transaction. 
