@@ -13,10 +13,14 @@ module.exports = async (body) => {
 }
 
 async function processNFT(body) {
-  const { walletAddr, nftCode, nftIssuer, price, quantity } = body
+  const { walletAddr, nftCode, nftIssuer, price, sellingCode, sellingIssuer, quantity } = body
   // Set up the selling asset as well as the buying asset
   var buyingAsset = new Asset(nftCode, nftIssuer);
-  var sellingAsset = Asset.native();
+  if (sellingCode == "native") {
+    var sellingAsset = Asset.native();
+  } else {
+    var sellingAsset = new Asset(sellingCode, sellingIssuer);
+  }
   
   // Check we are dealing with an integer to maintain non fungibility
   var remainder = quantity % 1
@@ -74,11 +78,21 @@ return await fetch(issuerURL)
     data = issuer.data        
     keys = Object.keys(data);
     var royaltyKeys = [];
+    if (typeof(data["nft_initial_account_holder"]) !== "undefined") {
+        var initAddr = Buffer.from(data["nft_initial_account_holder"], 'base64').toString();
+    } else {
+        var initAddr = ""
+    }
     
-    var initAddr = Buffer.from(data["nft_initial_account_holder"], 'base64').toString();
     
-    if (initAddr == walletAddr) {
-        var initialRoyalties = true; 
+    if (initAddr == "true") {
+        var initialRoyalties = true;
+        var dataOp = Operation.manageData({
+            name: "nft_initial_account_holder",
+            value: "false",
+            source: nftIssuer
+            });
+        royaltyPayments.push(dataOp); 
     } else {
         var ongoingRoyalties = true;
     }

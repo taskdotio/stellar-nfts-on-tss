@@ -5,11 +5,16 @@ const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = re
 const fetch = require("node-fetch");
 
 module.exports = async (body) => {
-  const { walletAddr, nftCode, nftIssuer, price, quantity } = body
+  const { walletAddr, nftCode, nftIssuer, price, buyingCode, buyingIssuer, quantity } = body
 
   // Set up the selling asset as well as the buying asset
   var sellingAsset = new Asset(nftCode, nftIssuer);
-  var buyingAsset = Asset.native();
+  if (buyingCode == "native") {
+    var buyingAsset = Asset.native();
+  } else {
+    var buyingAsset = new Asset(buyingCode, buyingIssuer);
+  }
+  
 
   // Variable Horizon URL
   var sellingURL = HORIZON_URL + "/accounts/" + walletAddr;
