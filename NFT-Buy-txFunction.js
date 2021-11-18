@@ -112,7 +112,7 @@ return await fetch(issuerURL)
         //NEW REVERSE ENGINEERING
         var totalRoyaltyPercentage = 0;
         for (i =0 ; i < royaltyKeys.length; i++) {
-            totalRoyaltyPercentage += royaltyKeys[i].split("_")[2];
+            totalRoyaltyPercentage += parseFloat(royaltyKeys[i].split("_")[2]);
         }
         var userPercentage = 100 - totalRoyaltyPercentage;
         var pricePerPercent = price/userPercentage;
@@ -121,7 +121,6 @@ return await fetch(issuerURL)
         for (i = 0; i < royaltyKeys.length; i++) {
             var percent = royaltyKeys[i].split("_")[2];
             var paymentPrice = parseFloat(pricePerPercent * percent).toFixed(7);
-
             var paymentAddr = Buffer.from(data[royaltyKeys[i]], 'base64').toString()
             
             var royaltyOp = Operation.payment({
