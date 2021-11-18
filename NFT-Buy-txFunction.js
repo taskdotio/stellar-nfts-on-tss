@@ -100,7 +100,7 @@ return await fetch(issuerURL)
         // according to what is required
         for (key in keys) {
             var text = keys[key].split("_");
-            console.log(text.length)
+            
             if (text.length > 2 && initialRoyalties && text[3] == "initial"){
                 royaltyKeys.push(keys[key])
                 
@@ -108,14 +108,22 @@ return await fetch(issuerURL)
                 royaltyKeys.push(keys[key])
             }
         }
+
+        //NEW REVERSE ENGINEERING
+        var totalRoyaltyPercentage = 0;
+        for (i =0 ; i < royaltyKeys.length; i++) {
+            totalRoyaltyPercentage += royaltyKeys[i].split("_")[2];
+        }
+        var userPercentage = 100 - totalRoyaltyPercentage;
+        var pricePerPercent = price/userPercentage;
         
         // Build the transactions for the royalties 
         for (i = 0; i < royaltyKeys.length; i++) {
-            var percent = royaltyKeys[i].split("_")[2]/100;
-            var paymentPrice = parseFloat(price * percent).toFixed(7);
+            var percent = royaltyKeys[i].split("_")[2];
+            var paymentPrice = parseFloat(pricePerPercent * percent).toFixed(7);
 
             var paymentAddr = Buffer.from(data[royaltyKeys[i]], 'base64').toString()
-            console.log(paymentPrice);
+            
             var royaltyOp = Operation.payment({
                                 destination: paymentAddr,
                                 asset: Asset.native(),
