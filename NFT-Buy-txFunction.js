@@ -4,9 +4,8 @@
 // - We create an array of the royalty payment operations
 // Finally we build a buy order transaction that manages the royalty payments
 
-const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account, Server } = require ('stellar-sdk') //add server?? would need StellarSDK
+const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account, Server, Claimant } = require ('stellar-sdk') 
 const fetch = require('node-fetch')
-// Adf the turret vars
 
 module.exports = async (body) => {
     return processNFT(body)
@@ -32,7 +31,7 @@ async function processNFT(body) {
   
 
   await orderbookCheck(sellingAsset, buyingAsset, price);  
-  let royalties = await createRoyalties(walletAddr, nftIssuer, price);
+  let royalties = await createRoyalties(nftIssuer, price, sellingAsset);
   return buildTransaction(walletAddr, nftIssuer, price, quantity, royalties, sellingAsset, buyingAsset); 
 }
 
@@ -62,7 +61,7 @@ async function orderbookCheck(sellingAsset, buyingAsset, price) {
 
 // Probes the issuer account's data and processes the royalty data that is stored and creates an array of 
 // royalty payments that are to be added to the final transaction. 
-async function createRoyalties(walletAddr, nftIssuer, price) {
+async function createRoyalties(nftIssuer, price, sellingAsset) {
 
 var issuerURL = HORIZON_URL + "/accounts/" + nftIssuer;
 var royaltyPayments = [];
@@ -123,10 +122,12 @@ return await fetch(issuerURL)
             var paymentPrice = parseFloat(pricePerPercent * percent).toFixed(7);
             var paymentAddr = Buffer.from(data[royaltyKeys[i]], 'base64').toString()
             
-            var royaltyOp = Operation.payment({
-                                destination: paymentAddr,
-                                asset: Asset.native(),
-                                amount: paymentPrice
+            var royaltyOp = Operation.createClaimableBalance({
+                                asset: sellingAsset, 
+                                amount: paymentPrice,
+                                claimants: [
+                                    new Claimant(paymentAddr)
+                                ]                               
                                 });
             royaltyPayments.push(royaltyOp);
         }
@@ -200,8 +201,8 @@ async function buildTransaction(walletAddr, nftIssuer, price, quantity, royaltyP
       }
       
       
-      transaction.setTimeout(0)
-      return transaction.build()
+      return transaction.setTimeout(0)
+      .build()
       .toXDR()
       
   }
