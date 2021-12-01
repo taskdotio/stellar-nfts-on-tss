@@ -5,7 +5,7 @@ const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = re
 const fetch = require("node-fetch");
 
 module.exports = async (body) => {
-  const { walletAddr, nftCode, nftIssuer, price, buyingCode, buyingIssuer, quantity } = body
+  const { walletAddr, nftCode, nftIssuer, price, buyingCode, buyingIssuer, quantity, offerID } = body
 
   // Set up the selling asset as well as the buying asset
   var sellingAsset = new Asset(nftCode, nftIssuer);
@@ -30,51 +30,23 @@ module.exports = async (body) => {
     throw {message: 'Please enter a number that is greater than one'};
   }
   
+
   
-    
-  if (price == 0) {
+  
+
+  if (offerID === "" || offerID == null || offerID == "undefined") {
     //Find the offer number from the account.
-    var offerDetails = await findOffer(walletAddr, nftCode, nftIssuer);
-    
-    return cancelSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL, offerDetails);
-  } else {
+ 
     return normalSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL);
+
+  } else {
+    return cancelSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL, offerID);
+
   }
  
 }
 
-async function findOffer(walletAddr, nftCode, nftIssuer){
-  var offersURL = HORIZON_URL + "/accounts/" + walletAddr + "/offers";
-  var offerID = "Nothing"
-  var offerAmount = "Nothing"
-  return await fetch(offersURL)
-  .then((res) => {
-      if (res.ok)
-          return res.json()
-      throw res
-      })
-  .then((issuer) => {
-      // Pulls the data in from the issuing account
-      data = Object.entries(issuer["_embedded"]["records"])
-      
-      for (let i = 0; i < data.length; i++) {
-          if (data[i][1]["selling"]["asset_code"] == nftCode && data[i][1]["selling"]["asset_issuer"] == nftIssuer){
-              offerID = data[i][1]["id"]
-              offerAmount = data[i][1]["price"]
-              
-          }
-      }
-
-      if (offerID == "Nothing") {
-          throw{message:"There appears to be no offer for this asset"}
-      }
-      
-      var retur = [offerID, offerAmount]
-      return retur
-  }); 
-}
-
-async function cancelSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL, offerDetails) {
+async function cancelSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL, offerID) {
   // Build the transaction of the NFT
   return await fetch(sellingURL)
   .then((res) => {
@@ -107,9 +79,9 @@ async function cancelSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingA
     .addOperation(Operation.manageSellOffer({
       selling: sellingAsset,
       buying: buyingAsset,
-      amount: "0",
-      price: offerDetails[1],
-      offerId: offerDetails[0]
+      amount: String(0),
+      price: newPrice,
+      offerId: parseInt(offerID)
     }))
     
     // Remove full authority and only authorise to maintain liabilities
