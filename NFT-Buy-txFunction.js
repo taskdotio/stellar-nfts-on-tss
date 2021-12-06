@@ -116,7 +116,7 @@ return await fetch(issuerURL)
                 royaltyKeys.push(keys[key])
             } else if (text.length > 2 && ongoingRoyalties && text[3] == "ongoing"){
                 royaltyKeys.push(keys[key])
-            } else if (text.length > 2 && text.length < 4 && text[2] == "creator") {
+            } else if (text.length > 2 && text.length < 4 && text[1] == "creator") {
                 royaltyKeys.push(keys[key])
             }
         }
