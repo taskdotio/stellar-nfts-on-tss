@@ -5,7 +5,7 @@ const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = re
 const fetch = require("node-fetch");
 
 module.exports = async (body) => {
-  const { walletAddr, nftCode, nftIssuer, price, buyingCode, buyingIssuer, quantity, offerID } = body
+  const { walletAddr, nftCode, nftIssuer, price, buyingCode, buyingIssuer, quantity, offerID, directTransfer, directTransferAddr,} = body
 
   // Set up the selling asset as well as the buying asset
   var sellingAsset = new Asset(nftCode, nftIssuer);
@@ -18,8 +18,8 @@ module.exports = async (body) => {
   // Variable Horizon URL
   var sellingURL = HORIZON_URL + "/accounts/" + walletAddr;
 
-  newPrice = parseFloat(price).toFixed(7);
-  newQuantity = parseFloat(quantity).toFixed(0);
+  var newPrice = parseFloat(price).toFixed(7);
+  var newQuantity = parseFloat(quantity).toFixed(0);
 
   // Make sure we are using integer sale value to protect nonfungible integrity
   var remainder = quantity % 1;
@@ -30,20 +30,74 @@ module.exports = async (body) => {
     throw {message: 'Please enter a number that is greater than one'};
   }
   
-
-  
-  
-
   if (offerID === "" || offerID == null || offerID == "undefined") {
-    //Find the offer number from the account.
- 
-    return normalSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL);
+    // Changes the value of directTransfer to uppercase to remove case sensitivity
+    if (directTransfer.toUpperCase() === "TRUE") {
+    
+      return directTransferFn(walletAddr, nftIssuer, sellingAsset, buyingAsset, newQuantity, sellingURL, directTransferAddr);
+    
+    } else {
+      
+      return normalSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL);
+
+    }
 
   } else {
+
     return cancelSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL, offerID);
 
   }
- 
+}
+
+async function directTransferFn(walletAddr, nftIssuer, sellingAsset, buyingAsset, newQuantity, sellingURL, directTransferAddr) {
+  return await fetch(sellingURL)
+  .then((res) => {
+    if (res.ok)
+      return res.json()
+    throw res
+  })
+  
+  .then((account) =>
+    new TransactionBuilder(
+      new Account(account.id, account.sequence), 
+      { 
+        fee: BASE_FEE, 
+        networkPassphrase: Networks[STELLAR_NETWORK],
+      }
+    )
+   
+    // Authorise the account to have full authority with the asset
+    .addOperation(Operation.setTrustLineFlags({
+      trustor: walletAddr,
+      asset: sellingAsset,
+      flags: {
+        authorized:true,
+        authorizedToMaintainLiabilities: false
+      },
+      source: nftIssuer
+    }))
+
+    // Add the payment operation
+    .addOperation(Operation.payment({
+      destination: directTransferAddr,
+      asset: buyingAsset,
+      amount: newQuantity,
+    }))
+    
+    // Remove full authority and only authorise to maintain liabilities
+    .addOperation(Operation.setTrustLineFlags({
+      trustor: walletAddr,
+      asset: sellingAsset,
+      flags: {
+        authorized: false,
+        authorizedToMaintainLiabilities: true
+      },
+      source: nftIssuer
+    }))
+    .setTimeout(0)
+    .build()
+    .toXDR()
+  )
 }
 
 async function cancelSell(walletAddr, nftIssuer, newPrice, sellingAsset, buyingAsset, newQuantity, sellingURL, offerID) {
