@@ -9,9 +9,9 @@ module.exports = async (body) => {
 
   // Set up the selling asset as well as the buying asset
   var sellingAsset = new Asset(nftCode, nftIssuer);
-  if (buyingCode == "native") {
+  if (buyingCode == "native" && directTransfer.toUpperCase() != "TRUE")  {
     var buyingAsset = Asset.native();
-  } else {
+  } else if (directTransfer.toUpperCase() != "TRUE") {
     var buyingAsset = new Asset(buyingCode, buyingIssuer);
   }
 
@@ -34,7 +34,7 @@ module.exports = async (body) => {
     // Changes the value of directTransfer to uppercase to remove case sensitivity
     if (directTransfer.toUpperCase() === "TRUE") {
     
-      return directTransferFn(walletAddr, nftIssuer, sellingAsset, buyingAsset, newQuantity, sellingURL, directTransferAddr);
+      return directTransferFn(walletAddr, nftIssuer, sellingAsset, newQuantity, sellingURL, directTransferAddr);
     
     } else {
       
@@ -49,7 +49,7 @@ module.exports = async (body) => {
   }
 }
 
-async function directTransferFn(walletAddr, nftIssuer, sellingAsset, buyingAsset, newQuantity, sellingURL, directTransferAddr) {
+async function directTransferFn(walletAddr, nftIssuer, sellingAsset, newQuantity, sellingURL, directTransferAddr) {
   return await fetch(sellingURL)
   .then((res) => {
     if (res.ok)
@@ -80,7 +80,7 @@ async function directTransferFn(walletAddr, nftIssuer, sellingAsset, buyingAsset
     // Add the payment operation
     .addOperation(Operation.payment({
       destination: directTransferAddr,
-      asset: buyingAsset,
+      asset: sellingAsset,
       amount: newQuantity,
     }))
     
