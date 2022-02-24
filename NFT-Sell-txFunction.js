@@ -1,7 +1,7 @@
 // This txFunction creates a sell order for an NFT asset. Uses walletAddr, nftCode, nftIssuer, price, quantity
 // input variables - and checks for integers to protect nonfungibility.
 
-const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account } = require("stellar-sdk");
+const { TransactionBuilder, Networks, BASE_FEE, Operation, Asset, Account, Claimant } = require("stellar-sdk");
 const fetch = require("node-fetch");
 
 module.exports = async (body) => {
