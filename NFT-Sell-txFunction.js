@@ -78,11 +78,14 @@ async function directTransferFn(walletAddr, nftIssuer, sellingAsset, newQuantity
     }))
 
     // Add the payment operation
-    .addOperation(Operation.payment({
-      destination: directTransferAddr,
-      asset: sellingAsset,
+    .addOperation(Operation.createClaimableBalance({
+      asset: sellingAsset, 
       amount: newQuantity,
-    }))
+      claimants: [
+          new Claimant(directTransferAddr)
+      ]                               
+      }))
+
     
     // Remove full authority and only authorise to maintain liabilities
     .addOperation(Operation.setTrustLineFlags({
